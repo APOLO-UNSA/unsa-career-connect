@@ -1,0 +1,359 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  COMPANY
+  ADMIN
+}
+
+enum GraduationStatus {
+  ACTIVE       // Estudiante activo
+  GRADUATED    // Egresado (sin título)
+  TITLED       // Titulado
+}
+
+enum VerificationStatus {
+  PENDING      // Pendiente de revisión
+  IN_REVIEW    // En revisión por oficina UDEEG
+  VERIFIED     // Verificado y aprobado
+  REJECTED     // Rechazado (datos incoherentes)
+  FLAGGED      // Marcado con alertas (en seguimiento)
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AvailabilityType {
+  IMMEDIATE
+  IN_30_DAYS
+  IN_60_DAYS
+  IN_90_DAYS
+  INTERNSHIP_ONLY
+  PART_TIME_ONLY
+}
+
+// ─── User / Auth ──────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  role          Role      @default(STUDENT)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  student Student?
+  company Company?
+  admin   Admin?
+
+  @@map("users")
+}
+
+// ─── Student / Graduate Profile ───────────────────────────────────────────────
+
+model Student {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Datos personales
+  firstName   String
+  lastName    String
+  dni         String?  @unique
+  phone       String?
+  photoUrl    String?
+  linkedinUrl String?
+  portfolioUrl String?
+  location    String?  @default("Arequipa, Perú")
+
+  // Datos académicos
+  faculty          String
+  career           String
+  graduationStatus GraduationStatus @default(ACTIVE)
+  graduationYear   Int?
+  admissionYear    Int?
+  gpa              Float?           // Escala 0–20 (Perú)
+  credits          Int?
+
+  // Expectativas profesionales
+  salaryExpectation Float?          // En soles mensuales
+  salaryExpectationMax Float?
+  availability      AvailabilityType @default(IMMEDIATE)
+  availableDate     DateTime?
+  workModality      String?         // "Presencial", "Remoto", "Híbrido"
+
+  // Resumen / Headline
+  headline  String?
+  summary   String?
+
+  // Estado de verificación
+  verificationStatus VerificationStatus @default(PENDING)
+  verificationNotes  String?
+  verifiedAt         DateTime?
+  verifiedBy         String?
+
+  // Puntaje de completitud del perfil (0-100)
+  profileScore Int @default(0)
+
+  // Relaciones
+  skills       StudentSkill[]
+  experience   WorkExperience[]
+  education    Education[]
+  languages    LanguageSkill[]
+  certifications Certification[]
+  alerts       VerificationAlert[]
+  jobAlerts    JobAlert[]
+  matchResults MatchResult[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("students")
+}
+
+model StudentSkill {
+  id         String  @id @default(cuid())
+  studentId  String
+  student    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  name       String
+  category   String  // "Técnica", "Blanda", "Idioma", "Software", "Certificación"
+  level      Int     @default(3) // 1-5
+  yearsUsed  Float?
+
+  @@unique([studentId, name])
+  @@map("student_skills")
+}
+
+model WorkExperience {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  company     String
+  position    String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  isCurrent   Boolean  @default(false)
+  salary      Float?
+  location    String?
+
+  @@map("work_experiences")
+}
+
+model Education {
+  id           String   @id @default(cuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  institution  String
+  degree       String
+  field        String?
+  startYear    Int
+  endYear      Int?
+  isCurrent    Boolean  @default(false)
+  gpa          Float?
+
+  @@map("educations")
+}
+
+model LanguageSkill {
+  id        String  @id @default(cuid())
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  language  String
+  level     String  // "Básico", "Intermedio", "Avanzado", "Nativo"
+  certified Boolean @default(false)
+
+  @@unique([studentId, language])
+  @@map("language_skills")
+}
+
+model Certification {
+  id           String   @id @default(cuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  name         String
+  issuer       String
+  issueDate    DateTime?
+  expiryDate   DateTime?
+  credentialUrl String?
+
+  @@map("certifications")
+}
+
+// ─── Verification System ──────────────────────────────────────────────────────
+
+model VerificationAlert {
+  id          String        @id @default(cuid())
+  studentId   String
+  student     Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  field       String        // Campo que generó la alerta
+  issue       String        // Descripción del problema
+  severity    AlertSeverity @default(MEDIUM)
+  resolved    Boolean       @default(false)
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  notes       String?
+  createdAt   DateTime      @default(now())
+
+  @@map("verification_alerts")
+}
+
+// ─── Company ──────────────────────────────────────────────────────────────────
+
+model Company {
+  id             String             @id @default(cuid())
+  userId         String             @unique
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name           String
+  ruc            String             @unique
+  sector         String
+  description    String?
+  website        String?
+  logoUrl        String?
+  contactEmail   String
+  contactPhone   String?
+  address        String?
+
+  verificationStatus VerificationStatus @default(PENDING)
+
+  searches       MatchingSearch[]
+  jobAlerts      JobPosition[]
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@map("companies")
+}
+
+// ─── Matching System ──────────────────────────────────────────────────────────
+
+model MatchingSearch {
+  id                String        @id @default(cuid())
+  companyId         String
+  company           Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Descripción en lenguaje natural del puesto
+  naturalLanguageQuery String
+
+  // Requisitos extraídos por el LLM
+  extractedCareers  String[]      // Carreras compatibles
+  extractedSkills   String[]
+  extractedExperience Int?        // Años mínimos
+  salaryMin         Float?
+  salaryMax         Float?
+  modality          String?
+  location          String?
+  workType          String?       // "Tiempo completo", "Prácticas", etc.
+
+  // Respuesta del LLM
+  llmSummary        String?
+
+  results           MatchResult[]
+
+  createdAt         DateTime      @default(now())
+
+  @@map("matching_searches")
+}
+
+model MatchResult {
+  id            String         @id @default(cuid())
+  searchId      String
+  search        MatchingSearch @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  matchScore    Float          // 0-100
+  explanation   String         // Explicación del LLM por qué es un buen match
+  rank          Int
+
+  createdAt     DateTime       @default(now())
+
+  @@unique([searchId, studentId])
+  @@map("match_results")
+}
+
+// ─── Job Positions (empresas) ─────────────────────────────────────────────────
+
+model JobPosition {
+  id             String  @id @default(cuid())
+  companyId      String
+  company        Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  title          String
+  description    String
+  requirements   String
+  careers        String[]
+  skills         String[]
+  salaryMin      Float
+  salaryMax      Float
+  modality       String
+  location       String
+  workType       String   // "Tiempo completo", "Prácticas profesionales", "Part-time"
+  expiresAt      DateTime
+  isActive       Boolean  @default(true)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("job_positions")
+}
+
+// ─── SERVIR Job Alerts ────────────────────────────────────────────────────────
+
+model JobAlert {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  title       String
+  institution String
+  url         String
+  salary      String?
+  location    String?
+  deadline    DateTime?
+  source      String   @default("SERVIR") // "SERVIR", "EMPRESA", "UDEEG"
+  isRead      Boolean  @default(false)
+  sentByEmail Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+
+  @@map("job_alerts")
+}
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
+
+model Admin {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+
+  @@map("admins")
+}
+
+// ─── System Metrics ───────────────────────────────────────────────────────────
+
+model SystemMetric {
+  id        String   @id @default(cuid())
+  metric    String
+  value     Float
+  metadata  Json?
+  recordedAt DateTime @default(now())
+
+  @@map("system_metrics")
+}
