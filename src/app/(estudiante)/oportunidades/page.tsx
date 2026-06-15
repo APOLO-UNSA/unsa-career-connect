@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { AppNavbar } from "@/components/AppNavbar";
 import {
   BellIcon,
   BuildingOffice2Icon,
@@ -9,6 +10,7 @@ import {
   CurrencyDollarIcon,
   MapPinIcon,
   ArrowTopRightOnSquareIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 
 interface ServirJob {
@@ -27,49 +29,92 @@ export default function OportunidadesPage() {
   const [loading, setLoading] = useState(true);
   const [career, setCareer] = useState("");
   const [total, setTotal] = useState(0);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState("all");
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
   const profileId = (session?.user as { profileId?: string })?.profileId;
 
-  useEffect(() => {
+  function fetchJobs(location: string) {
     if (!profileId) return;
-    fetch(`/api/servir?studentId=${profileId}`)
+    setLoading(true);
+    const params = new URLSearchParams({ studentId: profileId });
+    if (location !== "all") params.set("location", location);
+
+    fetch(`/api/servir?${params}`)
       .then((r) => r.json())
       .then((data) => {
         setJobs(data.jobs ?? []);
         setTotal(data.total ?? 0);
         setCareer(data.career ?? "");
+        setLocations(data.locations ?? []);
+        setUpdatedAt(data.updatedAt ?? null);
       })
       .finally(() => setLoading(false));
-  }, [profileId]);
+  }
+
+  useEffect(() => {
+    fetchJobs(selectedLocation);
+  }, [profileId, selectedLocation]);
 
   const daysUntilDeadline = (deadline: string | null) => {
     if (!deadline) return null;
-    const diff = Math.ceil((new Date(deadline).getTime() - Date.now()) / 86400000);
-    return diff;
+    return Math.ceil((new Date(deadline).getTime() - Date.now()) / 86400000);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-unsa-red border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AppNavbar />
+
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-unsa-red/10 flex items-center justify-center">
-            <BellIcon className="w-6 h-6 text-unsa-red" />
+        <div className="flex items-start justify-between gap-4 mb-2">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-unsa-red/10 flex items-center justify-center">
+              <BellIcon className="w-6 h-6 text-unsa-red" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Oportunidades en el sector público</h1>
+              <p className="text-sm text-gray-500">
+                {loading ? "Cargando..." : `${total} convocatoria${total !== 1 ? "s" : ""} compatibles con ${career}`}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Oportunidades para ti</h1>
-            <p className="text-sm text-gray-500">
-              {total} convocatoria{total !== 1 ? "s" : ""} de SERVIR compatibles con {career}
-            </p>
+
+          {/* Filtro de localidad */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <MapPinIcon className="w-4 h-4 text-gray-400" />
+            <select
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+              className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-unsa-red/30 focus:border-unsa-red"
+            >
+              <option value="all">Todas las regiones</option>
+              {locations.map((loc) => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))}
+            </select>
           </div>
+        </div>
+
+        {/* Badge SERVIR actualizado */}
+        <div className="flex items-center gap-2 mb-5">
+          <span className="inline-flex items-center gap-1.5 text-xs bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded-full font-medium">
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+            Actualizado con la base de datos de convocatorias del Estado — SERVIR
+            {updatedAt && (
+              <span className="text-green-500 ml-1">
+                · {new Date(updatedAt).toLocaleDateString("es-PE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+              </span>
+            )}
+          </span>
+          <button
+            onClick={() => fetchJobs(selectedLocation)}
+            className="text-gray-400 hover:text-unsa-red transition-colors"
+            title="Actualizar"
+          >
+            <ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+          </button>
         </div>
 
         {/* Info Banner */}
@@ -83,11 +128,28 @@ export default function OportunidadesPage() {
         </div>
 
         {/* Job Cards */}
-        {jobs.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <div className="w-8 h-8 border-4 border-unsa-red border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : jobs.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <BellIcon className="w-12 h-12 mx-auto mb-3 text-gray-200" />
-            <p className="font-medium text-gray-500">No hay convocatorias en este momento</p>
-            <p className="text-sm mt-1">Vuelve a revisar mañana o actualiza tu perfil para mejorar los resultados.</p>
+            <p className="font-medium text-gray-500">
+              {selectedLocation !== "all"
+                ? `No hay convocatorias en ${selectedLocation} para tu carrera`
+                : "No hay convocatorias en este momento"}
+            </p>
+            <p className="text-sm mt-1">
+              {selectedLocation !== "all" && (
+                <button
+                  onClick={() => setSelectedLocation("all")}
+                  className="text-unsa-red hover:underline"
+                >
+                  Ver todas las regiones
+                </button>
+              )}
+            </p>
           </div>
         ) : (
           <div className="space-y-4">

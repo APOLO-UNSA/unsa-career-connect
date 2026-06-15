@@ -10,6 +10,7 @@ import {
   UserIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
+import { AppNavbar } from "@/components/AppNavbar";
 
 type AlertSeverity = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
@@ -110,6 +111,7 @@ export default function VerificacionPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AppNavbar />
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">

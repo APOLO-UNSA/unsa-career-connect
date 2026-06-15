@@ -68,13 +68,13 @@ export default function LandingPage() {
               Soy Empresa
             </Link>
           </div>
-          <div className="mt-5">
+          <div className="mt-6">
             <Link
-              href="/demo"
+              href="/login"
               className="inline-flex items-center gap-2 text-sm text-red-200 hover:text-white transition-colors border border-white/20 px-5 py-2 rounded-full"
             >
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              Ver demo interactiva de alertas SERVIR
+              Acceder con cuenta demo
             </Link>
           </div>
         </div>

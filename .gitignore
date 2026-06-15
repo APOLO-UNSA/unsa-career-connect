@@ -37,3 +37,10 @@ Thumbs.db
 # Docker
 nginx/ssl/
 certbot/
+
+# AWS Keys
+*.pem
+
+# Hackathon docs
+*.docx
+*.pptx

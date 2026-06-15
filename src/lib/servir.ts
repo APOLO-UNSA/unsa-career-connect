@@ -327,7 +327,7 @@ export const SERVIR_DEMO_JOBS: ServirJob[] = [
     location: "Arequipa",
     deadline: "2026-08-08",
     requirements: "Historia, Antropología, Artes o Literatura y Lingüística; experiencia en gestión de patrimonio cultural inmaterial",
-    tags: ["Historia", "Antropología", "Artes Plásticas", "Música", "Literatura y Lingüística"],
+    tags: ["Historia", "Antropología", "Artes", "Literatura y Lingüística"],
   },
   {
     title: "Relacionista Comunitario",
@@ -336,8 +336,8 @@ export const SERVIR_DEMO_JOBS: ServirJob[] = [
     salary: "S/ 2,800 - S/ 3,800",
     location: "Arequipa",
     deadline: "2026-07-18",
-    requirements: "Relaciones Públicas, Sociología, Trabajo Social o Comunicaciones; manejo de quechua deseable",
-    tags: ["Relaciones Públicas", "Sociología", "Trabajo Social", "Periodismo"],
+    requirements: "Ciencias de Comunicación, Sociología, Trabajo Social o afines; manejo de quechua deseable",
+    tags: ["Ciencias de Comunicación", "Sociología", "Trabajo Social"],
   },
 
   // ── ECONOMÍA Y CIENCIAS FORMALES ─────────────────────────────────────────
@@ -470,8 +470,8 @@ export const SERVIR_DEMO_JOBS: ServirJob[] = [
     salary: "S/ 3,000 - S/ 4,200",
     location: "Arequipa",
     deadline: "2026-07-18",
-    requirements: "Periodismo, Relaciones Públicas o Comunicación Social; experiencia en redacción institucional y manejo de redes sociales",
-    tags: ["Periodismo", "Relaciones Públicas"],
+    requirements: "Ciencias de Comunicación o afines; experiencia en redacción institucional y manejo de redes sociales",
+    tags: ["Ciencias de Comunicación"],
   },
   {
     title: "Especialista en Cooperación Internacional",
@@ -481,7 +481,7 @@ export const SERVIR_DEMO_JOBS: ServirJob[] = [
     location: "Lima",
     deadline: "2026-08-10",
     requirements: "Economía, Administración o afines; inglés avanzado; experiencia en formulación de proyectos de cooperación técnica",
-    tags: ["Economía", "Administración", "Relaciones Públicas"],
+    tags: ["Economía", "Administración", "Ciencias de Comunicación"],
   },
 
   // ── INGENIERÍA SANITARIA Y QUÍMICA ───────────────────────────────────────
@@ -527,23 +527,11 @@ export function filterJobsForStudent(
   studentSkills: string[],
   jobs: ServirJob[] = SERVIR_DEMO_JOBS
 ): ServirJob[] {
-  const careerLower = studentCareer.toLowerCase();
-  const skillsLower = studentSkills.map((s) => s.toLowerCase());
+  const careerLower = studentCareer.toLowerCase().trim();
 
   return jobs.filter((job) => {
-    // Coincidencia por tags (campo estructurado del dataset simulado)
-    const tagMatch = (job as ServirJob & { tags?: string[] }).tags?.some(
-      (tag) => tag.toLowerCase() === careerLower
-    );
-
-    // Coincidencia por texto libre en requisitos
-    const reqLower = job.requirements.toLowerCase();
-    const textMatch = reqLower.includes(careerLower);
-
-    // Coincidencia por habilidades del estudiante
-    const skillMatch = skillsLower.some((skill) => reqLower.includes(skill));
-
-    return tagMatch || textMatch || skillMatch;
+    const tags = (job as ServirJob & { tags?: string[] }).tags ?? [];
+    return tags.some((tag) => tag.toLowerCase().trim() === careerLower);
   });
 }
 

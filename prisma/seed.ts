@@ -5,7 +5,7 @@
  * Crea usuarios de demostración para presentación de la hackathon:
  *   - 1 administrador UDEEG
  *   - 2 empresas verificadas
- *   - 12 estudiantes/egresados con perfiles completos (carreras variadas)
+ *   - 15 estudiantes/egresados con perfiles completos (carreras variadas)
  */
 
 import { PrismaClient } from "@prisma/client";
@@ -580,6 +580,173 @@ async function main() {
       ],
     },
 
+    // 13. Administración de Empresas – Marketing digital
+    {
+      email: "andrea.delgado@unsa.edu.pe",
+      firstName: "Andrea",
+      lastName: "Delgado Paredes",
+      career: "Administración de Empresas",
+      faculty: "Administración",
+      graduationStatus: "TITLED",
+      graduationYear: 2023,
+      admissionYear: 2018,
+      gpa: 15.4,
+      salaryExpectation: 3000,
+      salaryExpectationMax: 5000,
+      headline: "Administradora | Marketing Digital · E-commerce · CRM · Google Ads",
+      summary: "Administradora de empresas con especialización en marketing digital y gestión de campañas para pymes. Experiencia en Meta Ads y Google Ads con más de S/ 50k gestionados.",
+      availability: "IMMEDIATE",
+      workModality: "Híbrido",
+      phone: "912456789",
+      linkedinUrl: "https://linkedin.com/in/andrea-delgado-mkt",
+      verificationStatus: "VERIFIED",
+      skills: [
+        { name: "Marketing digital", category: "Técnica", level: 5, yearsUsed: 3 },
+        { name: "Google Ads", category: "Software", level: 4, yearsUsed: 2 },
+        { name: "Meta Ads", category: "Software", level: 4, yearsUsed: 2 },
+        { name: "CRM HubSpot", category: "Software", level: 3, yearsUsed: 1.5 },
+        { name: "E-commerce", category: "Técnica", level: 4, yearsUsed: 2 },
+        { name: "Análisis de métricas", category: "Técnica", level: 4, yearsUsed: 2 },
+        { name: "Power BI", category: "Software", level: 3, yearsUsed: 1 },
+        { name: "Liderazgo", category: "Blanda", level: 4, yearsUsed: 3 },
+      ],
+      experience: [
+        {
+          company: "Agencia Digital Impulso360 – Arequipa",
+          position: "Coordinadora de Campañas",
+          description: "Gestión de campañas SEM/SEO y redes sociales para 12 clientes del sector retail y turismo",
+          startDate: new Date("2023-03-01"),
+          endDate: null,
+          isCurrent: true,
+          salary: 3200,
+        },
+        {
+          company: "Tiendas EFE – Arequipa",
+          position: "Asistente de Marketing (Practicante)",
+          description: "Apoyo en campañas de temporada, análisis de ventas y coordinación con agencias externas",
+          startDate: new Date("2022-06-01"),
+          endDate: new Date("2022-12-31"),
+          isCurrent: false,
+          salary: 1200,
+        },
+      ],
+      languages: [
+        { language: "Español", level: "Nativo", certified: false },
+        { language: "Inglés", level: "Intermedio", certified: true },
+        { language: "Portugués", level: "Básico", certified: false },
+      ],
+    },
+
+    // 14. Ingeniería Industrial – Logística y operaciones
+    {
+      email: "sebastian.rios@unsa.edu.pe",
+      firstName: "Sebastián",
+      lastName: "Ríos Velásquez",
+      career: "Ingeniería Industrial",
+      faculty: "Ingeniería de Producción y Servicios",
+      graduationStatus: "GRADUATED",
+      graduationYear: 2023,
+      admissionYear: 2018,
+      gpa: 14.1,
+      salaryExpectation: 4000,
+      salaryExpectationMax: 6500,
+      headline: "Ing. Industrial | Lean Manufacturing · Six Sigma · Logística · SAP MM",
+      summary: "Egresado de Ingeniería Industrial con experiencia en optimización de procesos y cadena de suministro. Certificación Lean Six Sigma Yellow Belt.",
+      availability: "IN_30_DAYS",
+      workModality: "Presencial",
+      phone: "934789012",
+      verificationStatus: "VERIFIED",
+      skills: [
+        { name: "Lean Manufacturing", category: "Técnica", level: 4, yearsUsed: 2 },
+        { name: "Six Sigma", category: "Técnica", level: 3, yearsUsed: 1.5 },
+        { name: "SAP MM", category: "Software", level: 3, yearsUsed: 1 },
+        { name: "Gestión de almacenes", category: "Técnica", level: 4, yearsUsed: 2 },
+        { name: "Excel avanzado", category: "Software", level: 5, yearsUsed: 4 },
+        { name: "AutoCAD de plantas", category: "Software", level: 3, yearsUsed: 1.5 },
+        { name: "Gestión de calidad ISO 9001", category: "Técnica", level: 3, yearsUsed: 1 },
+        { name: "Negociación", category: "Blanda", level: 4, yearsUsed: 2 },
+      ],
+      experience: [
+        {
+          company: "Alicorp S.A.A. – Planta Arequipa",
+          position: "Asistente de Planeamiento y Control de Producción",
+          description: "Planificación de producción semanal, control de inventarios de materias primas y seguimiento de KPIs de planta",
+          startDate: new Date("2023-06-01"),
+          endDate: null,
+          isCurrent: true,
+          salary: 3800,
+        },
+        {
+          company: "Yura S.A. – Planta de Cemento",
+          position: "Practicante de Ingeniería Industrial",
+          description: "Estudio de tiempos y movimientos en línea de ensacado, propuesta de mejora que redujo 12% el tiempo de ciclo",
+          startDate: new Date("2022-07-01"),
+          endDate: new Date("2023-01-31"),
+          isCurrent: false,
+          salary: 1500,
+        },
+      ],
+      languages: [
+        { language: "Español", level: "Nativo", certified: false },
+        { language: "Inglés", level: "Intermedio", certified: false },
+      ],
+    },
+
+    // 15. Enfermería – Sector salud
+    {
+      email: "karina.mendoza@unsa.edu.pe",
+      firstName: "Karina",
+      lastName: "Mendoza Cáceres",
+      career: "Enfermería",
+      faculty: "Ciencias Médicas",
+      graduationStatus: "TITLED",
+      graduationYear: 2022,
+      admissionYear: 2017,
+      gpa: 15.7,
+      salaryExpectation: 3500,
+      salaryExpectationMax: 5500,
+      headline: "Enfermera titulada | UCI · Emergencias · Cuidados Intensivos · ESSALUD",
+      summary: "Enfermera colegiada con 2 años de experiencia en Unidad de Cuidados Intensivos. Especialización en soporte vital avanzado (ACLS). Disponible para hospitales públicos y privados.",
+      availability: "IMMEDIATE",
+      workModality: "Presencial",
+      phone: "956123890",
+      verificationStatus: "VERIFIED",
+      skills: [
+        { name: "Cuidados intensivos (UCI)", category: "Técnica", level: 4, yearsUsed: 2 },
+        { name: "Soporte vital avanzado (ACLS)", category: "Técnica", level: 4, yearsUsed: 2 },
+        { name: "Administración de medicamentos IV", category: "Técnica", level: 5, yearsUsed: 3 },
+        { name: "Triaje de emergencias", category: "Técnica", level: 4, yearsUsed: 2 },
+        { name: "Registro en HIS MINSA", category: "Software", level: 3, yearsUsed: 1.5 },
+        { name: "Trabajo bajo presión", category: "Blanda", level: 5, yearsUsed: 3 },
+        { name: "Empatía y comunicación con paciente", category: "Blanda", level: 5, yearsUsed: 4 },
+      ],
+      experience: [
+        {
+          company: "Hospital Regional Honorio Delgado – Arequipa",
+          position: "Enfermera Asistencial – UCI",
+          description: "Cuidado de pacientes críticos en UCI adultos, monitoreo hemodinámico, coordinación con equipo médico",
+          startDate: new Date("2022-09-01"),
+          endDate: null,
+          isCurrent: true,
+          salary: 3200,
+        },
+        {
+          company: "EsSalud – Hospital Edmundo Escomel",
+          position: "Enfermera (SERUMS)",
+          description: "SERUMS en área de emergencias y consulta externa, atención comunitaria en zonas periurbanas",
+          startDate: new Date("2022-01-01"),
+          endDate: new Date("2022-08-31"),
+          isCurrent: false,
+          salary: 2800,
+        },
+      ],
+      languages: [
+        { language: "Español", level: "Nativo", certified: false },
+        { language: "Inglés", level: "Básico", certified: false },
+        { language: "Quechua", level: "Básico", certified: false },
+      ],
+    },
+
     // 12. Ing. Electrónica – Perfil telecomunicaciones
     {
       email: "fernando.cruz@unsa.edu.pe",
@@ -689,6 +856,182 @@ async function main() {
       },
     });
     console.log(`  ✅ ${firstName} ${lastName} (${career})`);
+  }
+
+  // ─── Formación Complementaria y Posgrado ─────────────────────────────────────
+  const extraData: {
+    email: string;
+    certifications: { name: string; issuer: string; issueDate: Date | null; credentialUrl: string | null }[];
+    education: { degree: string; field: string; institution: string; startYear: number; endYear: number | null; isCurrent: boolean }[];
+  }[] = [
+    {
+      email: "maria.garcia@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en React Avanzado y Next.js", issuer: "Platzi", issueDate: new Date("2023-06-15"), credentialUrl: null },
+        { name: "Diplomado en Cloud Computing con AWS", issuer: "AWS Training & Certification", issueDate: new Date("2024-02-10"), credentialUrl: "https://aws.amazon.com/verification" },
+        { name: "Programa de Especialización en Ciberseguridad", issuer: "ISIL", issueDate: new Date("2024-08-01"), credentialUrl: null },
+      ],
+      education: [],
+    },
+    {
+      email: "carlos.mamani@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Seguridad Minera – DS 024", issuer: "IPEMIN", issueDate: new Date("2022-03-01"), credentialUrl: null },
+        { name: "Seminario en Gestión Ambiental para Operaciones Mineras", issuer: "OEFA", issueDate: new Date("2023-05-20"), credentialUrl: null },
+        { name: "Diplomado en Geomecánica y Diseño de Taludes", issuer: "Pontificia Universidad Católica del Perú (PUCP)", issueDate: new Date("2024-01-15"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Maestría", field: "Ingeniería de Minas", institution: "Universidad Nacional de San Agustín (UNSA)", startYear: 2024, endYear: null, isCurrent: true },
+      ],
+    },
+    {
+      email: "ana.flores@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Soporte Vital Básico y Avanzado (RCP)", issuer: "American Heart Association (AHA)", issueDate: new Date("2023-02-28"), credentialUrl: null },
+        { name: "Diplomado en Salud Pública y Epidemiología", issuer: "Universidad Peruana Cayetano Heredia (UPCH)", issueDate: new Date("2023-09-30"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Maestría", field: "Salud Pública", institution: "Universidad Peruana Cayetano Heredia (UPCH)", startYear: 2024, endYear: null, isCurrent: true },
+      ],
+    },
+    {
+      email: "luis.quispe@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en BIM con Revit para Estructuras", issuer: "Autodesk Authorized Training Center", issueDate: new Date("2023-04-10"), credentialUrl: null },
+        { name: "Programa de Especialización en Gestión de Proyectos de Infraestructura", issuer: "Project Management Institute (PMI) – Capítulo Perú", issueDate: new Date("2024-03-01"), credentialUrl: null },
+        { name: "Seminario en Normas Sísmicas E.030 y Diseño Sismorresistente", issuer: "Colegio de Ingenieros del Perú – CD Arequipa", issueDate: new Date("2023-11-15"), credentialUrl: null },
+      ],
+      education: [],
+    },
+    {
+      email: "sofia.condori@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Data Science con Python", issuer: "Coursera – Universidad de Michigan", issueDate: new Date("2022-12-01"), credentialUrl: "https://coursera.org/verify/example" },
+        { name: "Diplomado en Finanzas Cuantitativas y Gestión de Riesgos", issuer: "Universidad del Pacífico", issueDate: new Date("2023-07-31"), credentialUrl: null },
+        { name: "Curso en Machine Learning para Economistas", issuer: "edX – MIT", issueDate: new Date("2024-01-20"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Maestría", field: "Economía con mención en Políticas Públicas", institution: "Pontificia Universidad Católica del Perú (PUCP)", startYear: 2023, endYear: null, isCurrent: true },
+      ],
+    },
+    {
+      email: "pedro.huanca@unsa.edu.pe",
+      certifications: [
+        { name: "Diplomado en Derecho Administrativo y Contrataciones del Estado", issuer: "Academia de la Magistratura (AMAG)", issueDate: new Date("2022-10-15"), credentialUrl: null },
+        { name: "Seminario en Arbitraje en Contrataciones del Estado", issuer: "OSCE", issueDate: new Date("2023-06-30"), credentialUrl: null },
+        { name: "Curso en Gestión Pública y Anticorrupción", issuer: "Contraloría General de la República", issueDate: new Date("2024-02-28"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Maestría", field: "Derecho Administrativo y Gestión Pública", institution: "Universidad Nacional de San Agustín (UNSA)", startYear: 2022, endYear: 2024, isCurrent: false },
+      ],
+    },
+    {
+      email: "rosa.apaza@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en SIG / ArcGIS Pro para Evaluación Ambiental", issuer: "ESRI Perú", issueDate: new Date("2023-08-20"), credentialUrl: null },
+        { name: "Diplomado en Gestión Ambiental y Evaluación de Impacto Ambiental", issuer: "Ministerio del Ambiente (MINAM)", issueDate: new Date("2024-03-15"), credentialUrl: null },
+      ],
+      education: [],
+    },
+    {
+      email: "diego.ccopa@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Deep Learning y Redes Neuronales", issuer: "DeepLearning.AI – Coursera", issueDate: new Date("2023-05-01"), credentialUrl: "https://coursera.org/verify/example2" },
+        { name: "Programa de Especialización en Machine Learning Engineering", issuer: "Coursera – Google", issueDate: new Date("2024-04-01"), credentialUrl: null },
+        { name: "Seminario en Computación Cuántica Aplicada", issuer: "IBM Quantum", issueDate: new Date("2024-09-10"), credentialUrl: null },
+      ],
+      education: [],
+    },
+    {
+      email: "lucia.pinto@unsa.edu.pe",
+      certifications: [
+        { name: "Diplomado en Normas Internacionales de Información Financiera (NIIF)", issuer: "Colegio de Contadores Públicos de Arequipa", issueDate: new Date("2022-09-30"), credentialUrl: null },
+        { name: "Curso en Auditoría Interna basada en Riesgos", issuer: "Instituto de Auditores Internos del Perú (IIA Perú)", issueDate: new Date("2023-06-15"), credentialUrl: null },
+        { name: "Programa de Especialización en Tributación Empresarial", issuer: "SUNAT – Escuela de la Administración Tributaria", issueDate: new Date("2024-02-01"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Maestría", field: "Tributación y Política Fiscal", institution: "Universidad Nacional de San Agustín (UNSA)", startYear: 2022, endYear: 2024, isCurrent: false },
+      ],
+    },
+    {
+      email: "valeria.ramos@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Terapia Cognitivo-Conductual (TCC) Aplicada", issuer: "Centro de Estudios Avanzados en Lima (CEAL)", issueDate: new Date("2023-04-30"), credentialUrl: null },
+        { name: "Diplomado en Gestión de Recursos Humanos y Bienestar Organizacional", issuer: "ESAN Graduate School of Business", issueDate: new Date("2024-01-31"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Segunda Especialidad", field: "Neuropsicología Clínica", institution: "Universidad Nacional Mayor de San Marcos (UNMSM)", startYear: 2024, endYear: null, isCurrent: true },
+      ],
+    },
+    {
+      email: "javier.salas@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en BIM con Revit para Arquitectura", issuer: "Autodesk Authorized Training Center", issueDate: new Date("2023-07-15"), credentialUrl: null },
+        { name: "Seminario en Urbanismo Sostenible y Ciudades Resilientes", issuer: "Colegio de Arquitectos del Perú – Regional Arequipa", issueDate: new Date("2024-03-20"), credentialUrl: null },
+      ],
+      education: [],
+    },
+    {
+      email: "andrea.delgado@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Google Ads y Campañas de Búsqueda", issuer: "Google – Skillshop", issueDate: new Date("2022-11-30"), credentialUrl: "https://skillshop.credential.net/example" },
+        { name: "Programa de Especialización en Marketing Digital y E-commerce", issuer: "ISIL", issueDate: new Date("2023-08-31"), credentialUrl: null },
+        { name: "Diplomado en Dirección de Marketing Estratégico", issuer: "ESAN Graduate School of Business", issueDate: new Date("2024-04-30"), credentialUrl: null },
+      ],
+      education: [],
+    },
+    {
+      email: "sebastian.rios@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Lean Six Sigma Yellow Belt", issuer: "American Society for Quality (ASQ)", issueDate: new Date("2023-03-15"), credentialUrl: null },
+        { name: "Diplomado en Logística y Supply Chain Management", issuer: "ESAN Graduate School of Business", issueDate: new Date("2023-11-30"), credentialUrl: null },
+        { name: "Seminario en Industria 4.0 y Automatización de Procesos", issuer: "Siemens Perú", issueDate: new Date("2024-05-10"), credentialUrl: null },
+      ],
+      education: [],
+    },
+    {
+      email: "karina.mendoza@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Soporte Vital Cardiovascular Avanzado (ACLS)", issuer: "American Heart Association (AHA)", issueDate: new Date("2022-10-01"), credentialUrl: null },
+        { name: "Diplomado en Cuidados Críticos y Medicina Intensiva", issuer: "EsSalud – Instituto de Evaluación de Tecnologías en Salud e Investigación", issueDate: new Date("2023-08-31"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Segunda Especialidad", field: "Enfermería en Cuidados Intensivos", institution: "Universidad Nacional Mayor de San Marcos (UNMSM)", startYear: 2023, endYear: null, isCurrent: true },
+      ],
+    },
+    {
+      email: "fernando.cruz@unsa.edu.pe",
+      certifications: [
+        { name: "Curso en Cisco CCNA – Redes y Switching", issuer: "Cisco Networking Academy", issueDate: new Date("2022-07-20"), credentialUrl: null },
+        { name: "Diplomado en Internet de las Cosas (IoT) y Automatización Industrial", issuer: "Universidad Tecnológica del Perú (UTP)", issueDate: new Date("2023-09-15"), credentialUrl: null },
+        { name: "Programa de Especialización en 5G y Telecomunicaciones Avanzadas", issuer: "Ericsson Academy", issueDate: new Date("2024-06-01"), credentialUrl: null },
+      ],
+      education: [
+        { degree: "Maestría", field: "Ingeniería en Telecomunicaciones", institution: "Pontificia Universidad Católica del Perú (PUCP)", startYear: 2024, endYear: null, isCurrent: true },
+      ],
+    },
+  ];
+
+  console.log("\n📚 Agregando formación complementaria y posgrado...");
+  for (const extra of extraData) {
+    const user = await db.user.findUnique({ where: { email: extra.email }, include: { student: true } });
+    if (!user?.student) continue;
+    const sid = user.student.id;
+
+    await db.certification.deleteMany({ where: { studentId: sid } });
+    if (extra.certifications.length > 0) {
+      await db.certification.createMany({
+        data: extra.certifications.map((c) => ({ studentId: sid, ...c })),
+      });
+    }
+
+    await db.education.deleteMany({ where: { studentId: sid } });
+    if (extra.education.length > 0) {
+      await db.education.createMany({
+        data: extra.education.map((e) => ({ studentId: sid, ...e })),
+      });
+    }
+    console.log(`  📖 ${extra.email} — ${extra.certifications.length} cert(s), ${extra.education.length} posgrado(s)`);
   }
 
   console.log("\n🎉 Seed completado:");

@@ -18,7 +18,7 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-const MODEL = "llama-3.1-70b-versatile";
+const MODEL = "llama-3.3-70b-versatile";
 
 // ─── Paso 1: Extracción de requisitos ────────────────────────────────────────
 
@@ -31,13 +31,13 @@ Tu tarea es extraer los requisitos de un puesto de trabajo a partir de una descr
 Carreras disponibles en UNSA:
 Administración, Banca y Seguros, Marketing, Gestión, Arquitectura, Agronomía, Biología, Ciencias de la Nutrición,
 Ingeniería Pesquera, Contabilidad, Finanzas, Educación, Antropología, Historia, Sociología, Trabajo Social,
-Turismo y Hotelería, Física, Química, Matemáticas, Derecho, Economía, Enfermería, Artes Plásticas, Música,
+Turismo y Hotelería, Física, Química, Matemáticas, Derecho, Economía, Enfermería, Artes,
 Filosofía, Literatura y Lingüística, Ingeniería Geológica, Ingeniería Geofísica, Ingeniería de Minas,
 Ingeniería Civil, Ingeniería Sanitaria, Ingeniería Metalúrgica, Ingeniería Química,
 Ingeniería de Industrias Alimentarias, Ingeniería de Materiales, Ingeniería Ambiental, Ingeniería Eléctrica,
 Ingeniería Electrónica, Ingeniería Industrial, Ingeniería Mecánica, Ingeniería de Sistemas,
 Ciencia de la Computación, Ingeniería en Telecomunicaciones, Medicina, Psicología,
-Relaciones Públicas, Periodismo, Relaciones Industriales.
+Ciencias de Comunicación, Relaciones Industriales.
 
 Devuelve SOLO un JSON válido con esta estructura exacta:
 {
@@ -134,7 +134,9 @@ export async function rankCandidates(
   if (candidates.length === 0) return [];
 
   const SYSTEM_PROMPT = `Eres un experto en selección de personal para empresas peruanas.
-Debes rankear candidatos de la Universidad Nacional de San Agustín de Arequipa (UNSA) según su idoneidad para un puesto.
+Debes rankear ÚNICAMENTE los candidatos que se te proporcionan en el JSON — no inventes ni agregues candidatos adicionales.
+
+REGLA CRÍTICA: Solo puedes devolver candidateId de los candidatos del listado recibido. Si un id no está en el listado, no lo incluyas.
 
 Criterios de evaluación (total 100 puntos):
 - Alineación de carrera con el puesto: 30 pts
@@ -144,13 +146,13 @@ Criterios de evaluación (total 100 puntos):
 - Expectativa salarial dentro del rango ofrecido: 10 pts
 - Completitud y calidad del perfil: 5 pts
 
-Devuelve SOLO un JSON válido con esta estructura:
+Devuelve SOLO un JSON válido con esta estructura exacta, sin texto adicional:
 {
   "rankings": [
     {
-      "candidateId": "id del candidato",
+      "candidateId": "id exacto del candidato del listado",
       "score": 85.5,
-      "explanation": "Explicación concisa en español de por qué es buen candidato (max 150 palabras)"
+      "explanation": "Explicación concisa en español basada solo en los datos recibidos (max 100 palabras)"
     }
   ]
 }`;
@@ -235,32 +237,38 @@ export async function performMatching(
   });
   const llmSummary = summaryResponse.choices[0]?.message?.content ?? "";
 
-  // Guardar búsqueda y resultados en base de datos
-  const search = await db.matchingSearch.create({
-    data: {
-      companyId,
-      naturalLanguageQuery,
-      extractedCareers: requirements.careers,
-      extractedSkills: requirements.skills,
-      extractedExperience: requirements.experienceYears,
-      salaryMin: requirements.salaryMin,
-      salaryMax: requirements.salaryMax,
-      modality: requirements.modality,
-      location: requirements.location,
-      workType: requirements.workType,
-      llmSummary,
-      results: {
-        create: ranked.map((c) => ({
-          studentId: c.id,
-          matchScore: c.matchScore,
-          explanation: c.explanation,
-          rank: c.matchRank,
-        })),
+  // Guardar búsqueda en BD (no-crítico: si falla, igual retornamos resultados)
+  let searchId = `demo-${Date.now()}`;
+  try {
+    const search = await db.matchingSearch.create({
+      data: {
+        companyId,
+        naturalLanguageQuery,
+        extractedCareers: requirements.careers,
+        extractedSkills: requirements.skills,
+        extractedExperience: requirements.experienceYears,
+        salaryMin: requirements.salaryMin,
+        salaryMax: requirements.salaryMax,
+        modality: requirements.modality,
+        location: requirements.location,
+        workType: requirements.workType,
+        llmSummary,
+        results: {
+          create: ranked.map((c) => ({
+            studentId: c.id,
+            matchScore: c.matchScore,
+            explanation: c.explanation,
+            rank: c.matchRank,
+          })),
+        },
       },
-    },
-  });
+    });
+    searchId = search.id;
+  } catch (dbError) {
+    console.error("[matching] Error al guardar búsqueda en BD:", dbError);
+  }
 
-  return { requirements, candidates: ranked, searchId: search.id, llmSummary };
+  return { requirements, candidates: ranked, searchId, llmSummary };
 }
 
 // ─── Chat conversacional ──────────────────────────────────────────────────────
@@ -275,18 +283,35 @@ export async function chatWithBolsa(
   companyContext?: string
 ): Promise<string> {
   const SYSTEM = `Eres el asistente virtual de la Bolsa de Trabajo UNSA (Universidad Nacional de San Agustín de Arequipa).
-Ayudas a empresas a encontrar candidatos entre estudiantes y egresados de la UNSA.
-Puedes:
-1. Entender qué tipo de candidato busca la empresa
-2. Explicar el proceso de búsqueda
-3. Aclarar dudas sobre perfiles disponibles
-4. Confirmar que para iniciar la búsqueda la empresa debe proporcionar el rango salarial
+Tu único rol es RECOPILAR INFORMACIÓN sobre el puesto que busca la empresa para luego ejecutar una búsqueda real en la base de datos.
 
-Responde siempre en español, de forma profesional y concisa.
-${companyContext ? `\nContexto de la empresa: ${companyContext}` : ""}
+REGLAS ABSOLUTAS — NUNCA las rompas:
+- JAMÁS inventes, menciones ni describas candidatos, nombres, perfiles, ni resultados de búsqueda.
+- JAMÁS digas cuántos candidatos hay disponibles ni describas sus características.
+- JAMÁS menciones carreras que no existen en la UNSA.
+- Los únicos resultados reales provienen de la base de datos del sistema, no de ti.
+- Si la empresa pregunta por candidatos específicos, dile que el sistema los mostrará automáticamente tras la búsqueda.
 
-Cuando tengas suficiente información del puesto (cargo, requisitos, rango salarial),
-responde con: "Perfecto. Tengo suficiente información para buscar candidatos. ¿Deseas que inicie la búsqueda ahora?"`;
+TU TAREA es hacer hasta 3 preguntas para obtener:
+1. El cargo o puesto requerido
+2. Las habilidades o experiencia necesarias
+3. El rango salarial ofrecido (S/ mínimo – máximo)
+
+Carreras válidas en la UNSA (solo estas existen):
+Ingeniería de Sistemas, Ciencia de la Computación, Ingeniería Informática, Ingeniería Industrial,
+Ingeniería Civil, Ingeniería Ambiental, Ingeniería de Minas, Ingeniería Electrónica, Ingeniería Eléctrica,
+Ingeniería Mecánica, Ingeniería Química, Ingeniería Metalúrgica, Ingeniería de Industrias Alimentarias,
+Ingeniería Geológica, Ingeniería Geofísica, Ingeniería Sanitaria, Ingeniería en Telecomunicaciones,
+Arquitectura, Economía, Administración de Empresas, Contabilidad, Finanzas, Derecho, Medicina,
+Enfermería, Psicología, Relaciones Industriales, Turismo y Hotelería, Biología, Química, Física,
+Matemáticas, Estadística, Sociología, Trabajo Social, Historia, Comunicación Social.
+
+Responde siempre en español, de forma profesional y concisa (máximo 3 oraciones por respuesta).
+${companyContext ? `\nContexto: ${companyContext}` : ""}
+
+Cuando tengas el cargo, requisitos Y rango salarial, responde EXACTAMENTE:
+"Perfecto. Tengo suficiente información para iniciar la búsqueda en la base de datos. Buscando candidatos ahora..."
+No agregues nada más después de esa frase.`;
 
   const response = await groq.chat.completions.create({
     model: "llama-3.1-8b-instant",

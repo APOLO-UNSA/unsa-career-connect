@@ -80,6 +80,25 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(student);
 }
 
+// DELETE /api/students/[id] — elimina perfil y cuenta de usuario
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+  const profileId = (session.user as { profileId: string }).profileId;
+  if (profileId !== params.id) {
+    return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
+  }
+
+  const student = await db.student.findUnique({ where: { id: params.id } });
+  if (!student) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+  // Eliminar usuario en cascada (borra student, skills, experience, etc.)
+  await db.user.delete({ where: { id: student.userId } });
+
+  return NextResponse.json({ ok: true });
+}
+
 // PATCH /api/students/[id]
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);

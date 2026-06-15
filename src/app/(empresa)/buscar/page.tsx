@@ -10,8 +10,8 @@ import {
   StarIcon,
   BriefcaseIcon,
   CheckBadgeIcon,
-  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { AppNavbar } from "@/components/AppNavbar";
 
 interface Message {
   role: "user" | "assistant";
@@ -104,15 +104,27 @@ export default function BuscarPage() {
       const data = await res.json();
 
       const assistantMessage: Message = { role: "assistant", content: data.reply };
-      setMessages((prev) => [...prev, assistantMessage]);
+      const updatedMessages = [...newMessages, assistantMessage];
+      setMessages(updatedMessages);
 
-      // Detectar si el asistente tiene suficiente info para buscar
-      if (
-        data.reply.includes("suficiente información") ||
-        data.reply.includes("iniciar la búsqueda") ||
-        data.reply.includes("comenzar la búsqueda")
-      ) {
-        setReadyToSearch(true);
+      // Auto-disparar búsqueda cuando el LLM indique que tiene suficiente info
+      const reply = data.reply.toLowerCase();
+      const readyPhrases = [
+        "suficiente información para iniciar",
+        "buscando candidatos ahora",
+        "iniciar la búsqueda en la base de datos",
+        "suficiente información",
+        "iniciar la búsqueda",
+        "comenzar la búsqueda",
+        "buscar candidatos",
+        "procedo a buscar",
+        "realizaré la búsqueda",
+        "tengo todo lo necesario",
+        "puedo iniciar",
+      ];
+      if (readyPhrases.some((phrase) => reply.includes(phrase))) {
+        // Auto-ejecutar la búsqueda con el historial actual
+        performSearch(updatedMessages);
       }
     } catch {
       setMessages((prev) => [
@@ -124,13 +136,13 @@ export default function BuscarPage() {
     }
   };
 
-  const performSearch = async () => {
+  const performSearch = async (currentMessages?: Message[]) => {
     if (!companyId) return;
     setIsSearching(true);
     setReadyToSearch(false);
 
-    // Construir query completa del historial
-    const fullQuery = messages
+    const msgSource = currentMessages ?? messages;
+    const fullQuery = msgSource
       .filter((m) => m.role === "user")
       .map((m) => m.content)
       .join(". ");
@@ -142,8 +154,16 @@ export default function BuscarPage() {
         body: JSON.stringify({ query: fullQuery, companyId }),
       });
       const data = await res.json();
-      setSearchResult(data);
 
+      if (!res.ok) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: `Hubo un error al buscar candidatos: ${data.error ?? "Error desconocido"}. Por favor intenta de nuevo.` },
+        ]);
+        return;
+      }
+
+      setSearchResult(data);
       setMessages((prev) => [
         ...prev,
         {
@@ -175,7 +195,10 @@ export default function BuscarPage() {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-50">
+    <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
+      <AppNavbar />
+      {/* ─── Main content ─── */}
+      <div className="flex flex-1 overflow-hidden">
       {/* ─── Chat Panel ─── */}
       <div className="w-full md:w-[420px] flex flex-col border-r border-gray-200 bg-white shadow-sm">
         {/* Header */}
@@ -231,20 +254,6 @@ export default function BuscarPage() {
 
           <div ref={messagesEndRef} />
         </div>
-
-        {/* Search trigger */}
-        {readyToSearch && (
-          <div className="px-4 py-3 bg-green-50 border-t border-green-200">
-            <button
-              onClick={performSearch}
-              disabled={isSearching}
-              className="w-full bg-green-600 text-white font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-green-700 transition-colors disabled:opacity-60"
-            >
-              <MagnifyingGlassIcon className="w-4 h-4" />
-              {isSearching ? "Buscando candidatos..." : "Buscar candidatos ahora"}
-            </button>
-          </div>
-        )}
 
         {/* Input */}
         <div className="p-4 border-t border-gray-100">
@@ -435,6 +444,7 @@ export default function BuscarPage() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

@@ -33,12 +33,12 @@ export const CAREERS: Record<string, string[]> = {
   "Ciencias Naturales y Formales": ["Física", "Química", "Matemáticas"],
   "Economía": ["Economía"],
   "Enfermería": ["Enfermería"],
-  "Filosofía y Humanidades": ["Artes Plásticas", "Música", "Filosofía", "Literatura y Lingüística"],
+  "Filosofía y Humanidades": ["Artes", "Filosofía", "Literatura y Lingüística"],
   "Geología, Geofísica y Minas": ["Ingeniería Geológica", "Ingeniería Geofísica", "Ingeniería de Minas"],
   "Ingeniería de Procesos": ["Ingeniería Civil", "Ingeniería Sanitaria", "Ingeniería Metalúrgica", "Ingeniería Química", "Ingeniería de Industrias Alimentarias", "Ingeniería de Materiales", "Ingeniería Ambiental"],
   "Ingeniería de Producción y Servicios": ["Ingeniería Industrial", "Ingeniería de Sistemas", "Ciencia de la Computación"],
   "Ingeniería Eléctrica y Electrónica": ["Ingeniería Eléctrica", "Ingeniería Electrónica", "Ingeniería Mecánica", "Ingeniería en Telecomunicaciones"],
-  "Psicología, Relaciones Industriales y Ciencias de la Comunicación": ["Psicología", "Relaciones Públicas", "Periodismo", "Relaciones Industriales"],
+  "Psicología, Relaciones Industriales y Ciencias de la Comunicación": ["Psicología", "Relaciones Industriales", "Ciencias de Comunicación"],
 };
 
 export const ALL_CAREERS = Object.values(CAREERS).flat();

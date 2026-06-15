@@ -27,12 +27,25 @@ export async function GET(req: NextRequest) {
   if (!student) return NextResponse.json({ error: "Estudiante no encontrado" }, { status: 404 });
 
   const skills = student.skills.map((s) => s.name);
-  const jobs = filterJobsForStudent(student.career, skills);
+  const location = searchParams.get("location") ?? "";
+  let jobs = filterJobsForStudent(student.career, skills);
+
+  if (location && location !== "all") {
+    jobs = jobs.filter((j) =>
+      j.location.toLowerCase().includes(location.toLowerCase())
+    );
+  }
+
+  // Extraer localidades únicas de todos los jobs sin filtrar
+  const allJobs = filterJobsForStudent(student.career, skills);
+  const locations = [...new Set(allJobs.map((j) => j.location))].sort();
 
   return NextResponse.json({
     career: student.career,
     total: jobs.length,
     jobs,
+    locations,
+    updatedAt: new Date().toISOString(),
   });
 }
 
