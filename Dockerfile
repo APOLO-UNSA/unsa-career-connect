@@ -24,13 +24,14 @@ ENV NODE_ENV=production
 
 RUN apk add --no-cache openssl
 
-# Install pinned Prisma CLI for startup migrations
-RUN npm install -g prisma@5.18.0 --no-fund --no-audit
+# Install pinned Prisma CLI for startup migrations and tsx for seeding
+RUN npm install -g prisma@5.18.0 tsx --no-fund --no-audit
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 3000
 ENV PORT 3000
