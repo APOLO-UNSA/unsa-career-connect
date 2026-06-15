@@ -43,6 +43,10 @@ export async function GET(req: NextRequest) {
     take: 100,
   });
 
+  type AlertEntry = {
+    student: (typeof alerts)[number]["student"];
+    alerts: { id: string; field: string; issue: string; severity: string; createdAt: Date }[];
+  };
   // Agrupar por estudiante
   const byStudent = alerts.reduce((acc, alert) => {
     const key = alert.studentId;
@@ -57,7 +61,7 @@ export async function GET(req: NextRequest) {
       createdAt: alert.createdAt,
     });
     return acc;
-  }, {} as Record<string, unknown>);
+  }, {} as Record<string, AlertEntry>);
 
   const pending = await db.student.count({
     where: { verificationStatus: "IN_REVIEW" },
