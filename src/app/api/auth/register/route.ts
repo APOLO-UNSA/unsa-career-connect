@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     if (tipo === "estudiante") {
-      const { firstName, lastName, career } = body;
+      const { firstName, lastName, career, faculty } = body;
       if (!firstName || !lastName || !career) {
         return NextResponse.json({ error: "Faltan datos del estudiante." }, { status: 400 });
       }
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
               firstName,
               lastName,
               career,
+              faculty: faculty || "Sin especificar",
               verificationStatus: "PENDING",
             },
           },
