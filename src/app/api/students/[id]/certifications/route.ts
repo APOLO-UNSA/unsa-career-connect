@@ -3,8 +3,8 @@ import { getServerSession } from "next-auth";
 import { db } from "@/lib/db";
 import { authOptions } from "@/lib/auth";
 
-function isOwner(session: Awaited<ReturnType<typeof getServerSession>>, id: string) {
-  return (session?.user as { profileId?: string })?.profileId === id;
+function isOwner(session: { user?: Record<string, unknown> } | null, id: string) {
+  return (session?.user as { profileId?: string } | undefined)?.profileId === id;
 }
 
 // POST /api/students/[id]/certifications — agregar formación complementaria
