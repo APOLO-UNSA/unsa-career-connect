@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { authOptions } from "@/lib/auth";
 import { verifyProfile, calculateProfileScore } from "@/lib/verification";
@@ -72,12 +73,11 @@ export async function GET(req: NextRequest) {
   const page = Number(searchParams.get("page") ?? 1);
   const limit = Number(searchParams.get("limit") ?? 20);
 
-  const where: Record<string, unknown> = {
+  const where: Prisma.StudentWhereInput = {
     verificationStatus: { in: ["VERIFIED", "FLAGGED"] },
+    ...(career && { career }),
+    ...(status && { graduationStatus: status }),
   };
-
-  if (career) where.career = career;
-  if (status) where.graduationStatus = status;
 
   const [students, total] = await Promise.all([
     db.student.findMany({
