@@ -165,7 +165,7 @@ Devuelve SOLO un JSON válido con esta estructura exacta, sin texto adicional:
     habilidades: c.skills.slice(0, 15).join(", "),
     experienciaAnios: Math.round(c.experienceYears * 10) / 10,
     expectativaSalarial: c.salaryExpectation
-      ? `S/ ${c.salaryExpectation} - ${c.salaryExpectationMax ?? c.salaryExpectation * 1.3}`
+      ? `S/ ${c.salaryExpectation}`
       : "No especificada",
     idiomas: c.languages.join(", ") || "Solo español",
     disponibilidad: c.availability,
