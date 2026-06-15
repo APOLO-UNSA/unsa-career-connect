@@ -1,8 +1,6 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AcademicCapIcon, BuildingOffice2Icon, UsersIcon } from "@heroicons/react/24/outline";
@@ -11,7 +9,7 @@ import { ALL_CAREERS } from "@/lib/types";
 
 type Tipo = "estudiante" | "empresa" | null;
 
-export default function RegistroPage() {
+function RegistroContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tipoParam = searchParams.get("tipo") as Tipo;
@@ -229,5 +227,13 @@ export default function RegistroPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegistroPage() {
+  return (
+    <Suspense>
+      <RegistroContent />
+    </Suspense>
   );
 }
