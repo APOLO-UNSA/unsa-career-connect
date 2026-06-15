@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
   const where: Prisma.StudentWhereInput = {
     verificationStatus: { in: ["VERIFIED", "FLAGGED"] },
     ...(career && { career }),
-    ...(status && { graduationStatus: status }),
+    ...(status && { graduationStatus: status as Prisma.StudentWhereInput["graduationStatus"] }),
   };
 
   const [students, total] = await Promise.all([
