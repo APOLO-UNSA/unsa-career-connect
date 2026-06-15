@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
   // Extraer localidades únicas de todos los jobs sin filtrar
   const allJobs = filterJobsForStudent(student.career, skills);
-  const locations = [...new Set(allJobs.map((j) => j.location))].sort();
+  const locations = Array.from(new Set(allJobs.map((j) => j.location))).sort();
 
   return NextResponse.json({
     career: student.career,

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     .sort((a, b) => b.matches - a.matches);
 
   // Ciudades únicas
-  const locations = [...new Set(allJobs.flatMap((j) => j.location.split(" / ")))].sort();
+  const locations = Array.from(new Set(allJobs.flatMap((j) => j.location.split(" / ")))).sort();
 
   // Rango salarial promedio
   const salaries = allJobs
